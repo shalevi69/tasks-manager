@@ -1,0 +1,23 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "בדיקה - משימה ראשונה",
+      "description": "זה test",
+      "status": "todo",
+      "priority": "medium",
+      "assignedTo": null,
+      "deadline": null,
+      "scheduledDate": null,
+      "scheduledTime": null,
+      "estimatedDuration": null,
+      "tags": [],
+      "createdAt": "2026-02-28T01:33:52.730Z",
+      "updatedAt": "2026-02-28T01:33:52.730Z",
+      "completedAt": null,
+      "reminders": []
+    }
+  ],
+  "nextId": 2,
+  "lastUpdated": "2026-02-28T01:33:52.730Z"
+}

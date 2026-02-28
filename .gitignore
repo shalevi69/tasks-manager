@@ -1,0 +1,7 @@
+node_modules/
+*.log
+.env
+.DS_Store
+*.zip
+web/server.log
+web/proxy.js

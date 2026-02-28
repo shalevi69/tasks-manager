@@ -1,0 +1,19 @@
+{
+  "people": [
+    {
+      "id": 1,
+      "name": "שלו יפרח",
+      "email": "shalevi69@gmail.com",
+      "phone": "+972523459797",
+      "role": "owner"
+    },
+    {
+      "id": 2,
+      "name": "כפיר",
+      "role": "right-hand",
+      "notes": "יד ימין של שלו"
+    }
+  ],
+  "nextId": 3,
+  "lastUpdated": "2026-02-28T01:32:00Z"
+}
