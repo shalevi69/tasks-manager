@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "web/server.js",
       "use": "@vercel/node"
     }
@@ -12,7 +16,11 @@
       "dest": "web/server.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*\\.(css|js|jpg|png|gif|svg|ico))",
       "dest": "/$1"
     }
   ]
