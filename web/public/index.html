@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול משימות - שלו יפרח</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>📋 מערכת ניהול משימות</h1>
+            <div class="user-info">
+                <span id="user-name">שלו יפרח</span>
+                <span id="current-date"></span>
+            </div>
+        </header>
+
+        <!-- Stats Dashboard -->
+        <div class="stats-container" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-total">0</div>
+                <div class="stat-label">סה"כ משימות</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-todo">0</div>
+                <div class="stat-label">לביצוע</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-progress">0</div>
+                <div class="stat-label">בתהליך</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-done">0</div>
+                <div class="stat-label">הושלם</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-number" id="stat-overdue">0</div>
+                <div class="stat-label">באיחור</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="tasks">משימות</button>
+            <button class="tab" data-tab="notes">מאגר מידע</button>
+        </div>
+
+        <!-- Tasks Section -->
+        <div class="section active" id="tasks-section">
+            <!-- Search & Filters -->
+            <div class="controls">
+                <input type="text" id="task-search" placeholder="🔍 חיפוש משימות...">
+                <select id="task-filter-status">
+                    <option value="">כל הסטטוסים</option>
+                    <option value="todo">לביצוע</option>
+                    <option value="in-progress">בתהליך</option>
+                    <option value="done">הושלם</option>
+                </select>
+                <select id="task-filter-priority">
+                    <option value="">כל העדיפויות</option>
+                    <option value="urgent">דחוף</option>
+                    <option value="high">גבוה</option>
+                    <option value="medium">בינוני</option>
+                    <option value="low">נמוך</option>
+                </select>
+                <button class="btn-primary" id="btn-new-task">+ משימה חדשה</button>
+            </div>
+
+            <!-- Tasks List -->
+            <div class="tasks-list" id="tasks-list">
+                <div class="loading">טוען משימות...</div>
+            </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div class="section" id="notes-section">
+            <!-- Search -->
+            <div class="controls">
+                <input type="text" id="note-search" placeholder="🔍 חיפוש במאגר...">
+                <button class="btn-primary" id="btn-new-note">+ הערה חדשה</button>
+            </div>
+
+            <!-- Notes List -->
+            <div class="notes-list" id="notes-list">
+                <div class="loading">טוען הערות...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal" id="task-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title">משימה חדשה</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                
+                <label>כותרת *</label>
+                <input type="text" id="task-title" required>
+
+                <label>תיאור</label>
+                <textarea id="task-description" rows="4"></textarea>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>סטטוס</label>
+                        <select id="task-status">
+                            <option value="todo">לביצוע</option>
+                            <option value="in-progress">בתהליך</option>
+                            <option value="done">הושלם</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label>עדיפות</label>
+                        <select id="task-priority">
+                            <option value="low">נמוך</option>
+                            <option value="medium" selected>בינוני</option>
+                            <option value="high">גבוה</option>
+                            <option value="urgent">דחוף</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>תאריך יעד</label>
+                        <input type="date" id="task-deadline">
+                    </div>
+                    <div class="form-col">
+                        <label>תאריך ביצוע</label>
+                        <input type="date" id="task-scheduled-date">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>שעת ביצוע</label>
+                        <input type="time" id="task-scheduled-time">
+                    </div>
+                    <div class="form-col">
+                        <label>זמן משוער (דקות)</label>
+                        <input type="number" id="task-duration" min="0">
+                    </div>
+                </div>
+
+                <label>מוקצה ל</label>
+                <select id="task-assigned">
+                    <option value="">לא מוקצה</option>
+                </select>
+
+                <label>תגיות (מופרדות בפסיק)</label>
+                <input type="text" id="task-tags" placeholder="עבודה, דחוף, פגישה">
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">שמור</button>
+                    <button type="button" class="btn-secondary" id="btn-cancel">ביטול</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div class="modal" id="note-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>הערה חדשה</h2>
+            <form id="note-form">
+                <label>תוכן *</label>
+                <textarea id="note-content" rows="6" required></textarea>
+
+                <label>הקשר</label>
+                <input type="text" id="note-context" placeholder="למשל: פגישה עם לקוח X">
+
+                <label>תגיות (מופרדות בפסיק)</label>
+                <input type="text" id="note-tags" placeholder="רעיון, חשוב, follow-up">
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">שמור</button>
+                    <button type="button" class="btn-secondary" id="btn-cancel-note">ביטול</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
