@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 9000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Initialize Task Manager
 const tm = new TaskManager();
