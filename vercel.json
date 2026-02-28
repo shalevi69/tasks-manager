@@ -12,22 +12,8 @@
       "dest": "web/server.js"
     },
     {
-      "src": "/style.css",
-      "dest": "web/public/style.css"
-    },
-    {
-      "src": "/app.js",
-      "dest": "web/public/app.js"
-    },
-    {
       "src": "/(.*)",
-      "dest": "web/public/index.html"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/web/server.js"
+      "dest": "/$1"
     }
   ]
 }
