@@ -8,6 +8,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const TaskManager = require('../task-manager.js');
+const { authMiddleware, showCredentials } = require('./auth.js');
 
 const app = express();
 const PORT = process.env.PORT || 9000;
@@ -15,12 +16,17 @@ const PORT = process.env.PORT || 9000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Public static files (no auth needed)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Initialize Task Manager
 const tm = new TaskManager();
 
-// ========== API Routes ==========
+// ========== API Routes (Protected) ==========
+
+// Apply authentication to all /api/* routes
+app.use('/api/*', authMiddleware);
 
 // Tasks
 app.get('/api/tasks', (req, res) => {
@@ -160,6 +166,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Task Manager server running on http://0.0.0.0:${PORT}`);
   console.log(`📊 API available at http://0.0.0.0:${PORT}/api`);
   console.log(`🌐 Public access: http://34.69.195.180:${PORT}`);
+  console.log('');
+  showCredentials();
 });
 
 module.exports = app;

@@ -5,6 +5,9 @@
 
 const API_BASE = 'api';
 
+// Authentication
+let API_KEY = localStorage.getItem('task-manager-api-key') || '';
+
 let currentTasks = [];
 let currentNotes = [];
 let people = [];
@@ -28,14 +31,35 @@ function initializeDateDisplay() {
 
 // ========== API Calls ==========
 async function apiCall(endpoint, options = {}) {
+    // Check for API key
+    if (!API_KEY) {
+        API_KEY = prompt('🔐 הזן API Key:\n\n(מצא את ה-key ב-WhatsApp מאבנר)');
+        if (API_KEY) {
+            localStorage.setItem('task-manager-api-key', API_KEY);
+        } else {
+            alert('❌ נדרש API Key לשימוש במערכת');
+            return null;
+        }
+    }
+
     try {
         const response = await fetch(API_BASE + endpoint, {
             ...options,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': API_KEY,
                 ...options.headers
             }
         });
+        
+        // Handle 401 - Invalid API key
+        if (response.status === 401) {
+            localStorage.removeItem('task-manager-api-key');
+            API_KEY = '';
+            alert('❌ API Key לא תקף. נסה שוב.');
+            return apiCall(endpoint, options);
+        }
+
         const data = await response.json();
         if (!data.success) throw new Error(data.error);
         return data.data;
