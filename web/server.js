@@ -7,7 +7,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const TaskManager = require('../task-manager.js');
+const TaskDatabase = require('../db.js');
 const { authMiddleware, showCredentials } = require('./auth.js');
 
 const app = express();
@@ -20,8 +20,8 @@ app.use(express.json());
 // Public static files (no auth needed)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize Task Manager
-const tm = new TaskManager();
+// Initialize Database
+const db = new TaskDatabase();
 
 // ========== API Routes (Protected) ==========
 
@@ -36,7 +36,7 @@ app.get('/api/tasks', (req, res) => {
       assignedTo: req.query.assignedTo ? parseInt(req.query.assignedTo) : undefined,
       priority: req.query.priority
     };
-    const tasks = tm.getTasks(filters);
+    const tasks = db.getTasks(filters);
     res.json({ success: true, data: tasks });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -45,7 +45,7 @@ app.get('/api/tasks', (req, res) => {
 
 app.post('/api/tasks', (req, res) => {
   try {
-    const task = tm.createTask(req.body);
+    const task = db.createTask(req.body);
     res.json({ success: true, data: task });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -55,7 +55,7 @@ app.post('/api/tasks', (req, res) => {
 app.put('/api/tasks/:id', (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const task = tm.updateTask(id, req.body);
+    const task = db.updateTask(id, req.body);
     if (!task) {
       return res.status(404).json({ success: false, error: 'Task not found' });
     }
@@ -68,7 +68,7 @@ app.put('/api/tasks/:id', (req, res) => {
 app.delete('/api/tasks/:id', (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const deleted = tm.deleteTask(id);
+    const deleted = db.deleteTask(id);
     if (!deleted) {
       return res.status(404).json({ success: false, error: 'Task not found' });
     }
@@ -81,7 +81,7 @@ app.delete('/api/tasks/:id', (req, res) => {
 app.get('/api/tasks/search', (req, res) => {
   try {
     const query = req.query.q || '';
-    const results = tm.searchTasks(query);
+    const results = db.searchTasks(query);
     res.json({ success: true, data: results });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -91,7 +91,7 @@ app.get('/api/tasks/search', (req, res) => {
 // Notes
 app.get('/api/notes', (req, res) => {
   try {
-    const notes = tm.notes.notes;
+    const notes = db.getNotes();
     res.json({ success: true, data: notes });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -100,7 +100,7 @@ app.get('/api/notes', (req, res) => {
 
 app.post('/api/notes', (req, res) => {
   try {
-    const note = tm.createNote(req.body);
+    const note = db.createNote(req.body);
     res.json({ success: true, data: note });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -110,7 +110,7 @@ app.post('/api/notes', (req, res) => {
 app.get('/api/notes/search', (req, res) => {
   try {
     const query = req.query.q || '';
-    const results = tm.searchNotes(query);
+    const results = db.searchNotes(query);
     res.json({ success: true, data: results });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -120,7 +120,7 @@ app.get('/api/notes/search', (req, res) => {
 // People
 app.get('/api/people', (req, res) => {
   try {
-    res.json({ success: true, data: tm.people.people });
+    res.json({ success: true, data: db.getPeople() });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -128,7 +128,7 @@ app.get('/api/people', (req, res) => {
 
 app.post('/api/people', (req, res) => {
   try {
-    const person = tm.addPerson(req.body);
+    const person = db.createPerson(req.body);
     res.json({ success: true, data: person });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -138,18 +138,7 @@ app.post('/api/people', (req, res) => {
 // Statistics
 app.get('/api/stats', (req, res) => {
   try {
-    const allTasks = tm.tasks.tasks;
-    const stats = {
-      total: allTasks.length,
-      todo: allTasks.filter(t => t.status === 'todo').length,
-      inProgress: allTasks.filter(t => t.status === 'in-progress').length,
-      done: allTasks.filter(t => t.status === 'done').length,
-      overdue: allTasks.filter(t => {
-        if (!t.deadline || t.status === 'done') return false;
-        return new Date(t.deadline) < new Date();
-      }).length,
-      totalNotes: tm.notes.notes.length
-    };
+    const stats = db.getStats();
     res.json({ success: true, data: stats });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
